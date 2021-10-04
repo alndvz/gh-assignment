@@ -1,0 +1,4 @@
+{:paths ["src"]
+ :deps {aleph/aleph {:mvn/version "0.4.6"}
+        com.xtdb/xtdb-core {:mvn/version "1.19.0-beta1"}
+        com.xtdb/xtdb-rocksdb {:mvn/version "1.19.0-beta1"}}}
