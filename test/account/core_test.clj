@@ -24,3 +24,17 @@
         "viewing an account should return the correct set of keys")
     (is (nil? (sut/view 0))
         "a non-existent account should return nil")))
+
+;; Notes
+;; For these tests that use thrown-with-msg?, would be better to check a more
+;; stable value other than the message.
+(deftest test-deposit-into-account
+  (let [{:keys [account-number]} (sut/create account-name)]
+    (is (= 100 (:balance (sut/deposit account-number 100)))
+        "returned account should have a new balance")
+    (is (= 100 (:balance (sut/view account-number)))
+        "viewed account should have a new balance")
+    (is (thrown-with-msg? Exception #"Cannot deposit in to non-existent account"
+                          (sut/deposit 0 100)))
+    (is (thrown-with-msg? Exception #"Cannot deposit negative value in to account"
+                          (sut/deposit account-number 0)))))
