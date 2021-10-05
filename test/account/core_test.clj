@@ -16,3 +16,11 @@
         "a new account should have an account number")
     (is (apply distinct? (map :account-number more-accounts))
         "each account should have a unique account number")))
+
+(deftest test-viewing-an-account
+  (let [{:keys [account-number]} (sut/create account-name)
+        account (sut/view account-number)]
+    (is (= #{:account-number :name :balance} (set (keys account)))
+        "viewing an account should return the correct set of keys")
+    (is (nil? (sut/view 0))
+        "a non-existent account should return nil")))

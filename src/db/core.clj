@@ -32,3 +32,6 @@
   (->> (mapv (fn [eid]
                [::xt/evict eid]) entity-ids)
        (xt/submit-tx node)))
+
+(defn unpack-docs [query-result]
+  (map (fn [[doc]] doc) query-result))
