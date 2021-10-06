@@ -35,7 +35,7 @@
     (is (= 100 (:balance (sut/view account-number)))
         "viewed account should have a new balance")
     (is (thrown-with-msg? Exception #"Cannot deposit in to non-existent account"
-                          (sut/deposit 0 100)))
+                          (sut/deposit -1 100)))
     (is (thrown-with-msg? Exception #"Cannot deposit zero or a negative value in to account"
                           (sut/deposit account-number 0)))))
 
@@ -48,7 +48,7 @@
     (is (thrown-with-msg? Exception #"Insufficient funds"
                           (sut/withdraw account-number 100)))
     (is (thrown-with-msg? Exception #"Cannot withdraw from non-existent account"
-                          (sut/withdraw 0 5)))))
+                          (sut/withdraw -1 5)))))
 
 (deftest test-transfer-between-accounts
   (let [{account-number-1 :account-number} (sut/create account-name)
@@ -65,8 +65,8 @@
     (is (thrown-with-msg? Exception #"Insufficient funds"
                           (sut/transfer account-number-1 account-number-2 100)))
     (is (thrown-with-msg? Exception #"Cannot transfer from a non-existent account"
-                          (sut/transfer 0 account-number-2 5)))
+                          (sut/transfer -1 account-number-2 5)))
     (is (thrown-with-msg? Exception #"Cannot transfer to a non-existent account"
-                          (sut/transfer account-number-1 0 5)))
+                          (sut/transfer account-number-1 -1 5)))
     (is (thrown-with-msg? Exception #"Cannot transfer funds to the same account"
                           (sut/transfer account-number-1 account-number-1 5)))))
