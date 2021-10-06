@@ -70,3 +70,29 @@
                           (sut/transfer account-number-1 -1 5)))
     (is (thrown-with-msg? Exception #"Cannot transfer funds to the same account"
                           (sut/transfer account-number-1 account-number-1 5)))))
+
+(deftest test-account-transactions
+  (let [{account-number-1 :account-number} (sut/create account-name)
+        {account-number-2 :account-number} (sut/create account-name)
+        {account-number-3 :account-number} (sut/create account-name)
+        _ (sut/deposit account-number-1 100)
+        _ (sut/deposit account-number-3 10)
+        _ (sut/transfer account-number-1 account-number-2 5)
+        _ (sut/transfer account-number-3 account-number-1 10)
+        _ (sut/withdraw account-number-1 20)
+        [entry-4 entry-3 entry-2 entry-1 entry-0 :as t] (sut/view-transactions account-number-1)]
+    (is (= 1 t))
+    (is (= {:sequence 0
+            :description "account created"} entry-0))
+    (is (= {:sequence 1
+            :credit 100
+            :description "deposit"} entry-1))
+    (is (= {:sequence 2
+            :debit 5
+            :description (str "send to #" account-number-2)} entry-2))
+    (is (= {:sequence 3
+            :credit 10
+            :description (str "receive from #" account-number-3)} entry-3))
+    (is (= {:sequence 4
+            :debit 20
+            :description "withdraw"} entry-4))))
