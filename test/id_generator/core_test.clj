@@ -13,11 +13,11 @@
 (use-fixtures :once cleanup-ids)
 
 (deftest test-generate-id
+  (is (= 0 (sut/generate-id id-key-1))
+      "The first call to generate-id should always return a 0")
   (is (= 1 (sut/generate-id id-key-1))
-      "The first call to generate-id should always return a 1")
-  (is (= 2 (sut/generate-id id-key-1))
       "Subsequent calls should increment")
+  (is (= 0 (sut/generate-id id-key-2))
+      "A call with a different key should return 0 again")
   (is (= 1 (sut/generate-id id-key-2))
-      "A call with a different key should return 1 again")
-  (is (= 2 (sut/generate-id id-key-2))
       "And another call should increment"))
