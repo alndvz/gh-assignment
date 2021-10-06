@@ -34,4 +34,4 @@
        (xt/submit-tx node)))
 
 (defn unpack-docs [query-result]
-  (map (fn [[doc]] doc) query-result))
+  (map (fn [[doc]] (dissoc doc :xt/id)) query-result))

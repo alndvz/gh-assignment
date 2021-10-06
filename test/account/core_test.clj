@@ -36,5 +36,16 @@
         "viewed account should have a new balance")
     (is (thrown-with-msg? Exception #"Cannot deposit in to non-existent account"
                           (sut/deposit 0 100)))
-    (is (thrown-with-msg? Exception #"Cannot deposit negative value in to account"
+    (is (thrown-with-msg? Exception #"Cannot deposit zero or a negative value in to account"
                           (sut/deposit account-number 0)))))
+
+(deftest test-withdraw-from-account
+  (let [{:keys [account-number]} (sut/create account-name)]
+    (sut/deposit account-number 100)
+    (is (= 95 (:balance (sut/withdraw account-number 5))))
+    (is (thrown-with-msg? Exception #"Cannot withdraw zero or a negative value from account"
+                          (sut/withdraw account-number -5)))
+    (is (thrown-with-msg? Exception #"Insufficient funds"
+                          (sut/withdraw account-number 100)))
+    (is (thrown-with-msg? Exception #"Cannot withdraw from non-existent account"
+                          (sut/withdraw 0 5)))))

@@ -31,7 +31,16 @@
 (defn deposit [account-number amount]
   (let [account (view account-number)]
     (when (nil? account) (error "Cannot deposit in to non-existent account" {}))
-    (when-not (pos-int? amount) (error "Cannot deposit negative value in to account" {}))
+    (when-not (pos-int? amount) (error "Cannot deposit zero or a negative value in to account" {}))
     (let [updated-account (update account :balance + amount)]
+      (db/write-many [(assoc updated-account :db/id account-number)] :wait? true)
+      updated-account)))
+
+(defn withdraw [account-number amount]
+  (let [{:keys [balance] :as account} (view account-number)]
+    (when (nil? account) (error "Cannot withdraw from non-existent account" {}))
+    (when-not (pos-int? amount) (error "Cannot withdraw zero or a negative value from account" {}))
+    (when (< balance amount) (error "Insufficient funds" {}))
+    (let [updated-account (update account :balance - amount)]
       (db/write-many [(assoc updated-account :db/id account-number)] :wait? true)
       updated-account)))
