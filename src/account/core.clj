@@ -45,3 +45,22 @@
     (let [updated-account (update account :balance - amount)]
       (db/write-many [(assoc updated-account :db/id account-number)] :wait? true)
       updated-account)))
+
+(defn transfer [from-account-number to-account-number amount]
+  (when (= from-account-number to-account-number)
+    (error "Cannot transfer funds to the same account"))
+  (let [{:keys [balance] :as from-account} (view from-account-number)
+        to-account (view to-account-number)]
+    (when (nil? from-account) (error "Cannot transfer from a non-existent account"))
+    (when (nil? to-account) (error "Cannot transfer to a non-existent account"))
+    (when-not (pos-int? amount)
+      (error "Cannot transfer a zero or negative value between accounts"))
+    (when (< balance amount) (error "Insufficient funds"))
+    (let [updated-from-account (update from-account :balance - amount)
+          updated-to-account (update to-account :balance + amount)]
+      ;; Both entities are within a transaction, both or none should
+      ;; get written
+      (db/write-many [(assoc updated-from-account :db/id from-account-number)
+                      (assoc updated-to-account :db/id to-account-number)]
+                     :wait? true)
+      updated-from-account)))
