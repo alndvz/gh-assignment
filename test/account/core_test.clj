@@ -20,7 +20,7 @@
 (deftest test-viewing-an-account
   (let [{:keys [account-number]} (sut/create account-name)
         account (sut/view account-number)]
-    (is (= #{:account-number :name :balance} (set (keys account)))
+    (is (= #{:account-number :name :balance :db/id} (set (keys account)))
         "viewing an account should return the correct set of keys")
     (is (nil? (sut/view 0))
         "a non-existent account should return nil")))
