@@ -4,9 +4,6 @@
 
 (def id-gen-key :account)
 
-(defn account-id [account-number]
-  {:key :account :val account-number})
-
 (defn create-transaction [account-number data]
   (let [sequence (id-gen/generate-id {:key :transaction-sequence
                                       :val account-number})]
@@ -35,7 +32,8 @@
 ;; same name.
 (defn create [name]
   (let [account-number (id-gen/generate-id id-gen-key)
-        account-entity {:db/id (account-id account-number)
+        account-entity {:db/id account-number
+                        :type :account
                         :account-number account-number
                         :name name
                         :balance 0}
@@ -45,9 +43,9 @@
 
 (defn view [account-number]
   (let [account (db/query '{:find [(pull ?e [*])]
-                            :where [[?e :db/id id]]
-                            :in [id]}
-                          (account-id account-number))]
+                            :where [[?e :db/id account-number]]
+                            :in [account-number]}
+                          account-number)]
     (first (db/unpack-docs account))))
 
 (defn deposit [account-number amount]

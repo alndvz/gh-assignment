@@ -20,7 +20,7 @@
 (deftest test-viewing-an-account
   (let [{:keys [account-number]} (sut/create account-name)
         account (sut/view account-number)]
-    (is (= #{:account-number :name :balance :db/id} (set (keys account)))
+    (is (= #{:account-number :name :balance :db/id :type} (set (keys account)))
         "viewing an account should return the correct set of keys")
     (is (nil? (sut/view 0))
         "a non-existent account should return nil")))
@@ -80,8 +80,7 @@
         _ (sut/transfer account-number-1 account-number-2 5)
         _ (sut/transfer account-number-3 account-number-1 10)
         _ (sut/withdraw account-number-1 20)
-        [entry-4 entry-3 entry-2 entry-1 entry-0 :as t] (sut/view-transactions account-number-1)]
-    (is (= 1 t))
+        [entry-4 entry-3 entry-2 entry-1 entry-0] (sut/view-transactions account-number-1)]
     (is (= {:sequence 0
             :description "account created"} entry-0))
     (is (= {:sequence 1
