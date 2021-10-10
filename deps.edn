@@ -1,5 +1,7 @@
 {:paths ["src" "dev"]
- :deps {aleph/aleph {:mvn/version "0.4.6"}
+ :deps {aleph/aleph {:mvn/version "0.4.7-alpha7"}
+        metosin/reitit {:mvn/version "0.5.12"}
+        metosin/muuntaja {:mvn/version "0.6.8"}
         com.xtdb/xtdb-core {:mvn/version "1.19.0-beta1"}
         com.xtdb/xtdb-rocksdb {:mvn/version "1.19.0-beta1"}
         mount/mount {:mvn/version "0.1.16"}}}

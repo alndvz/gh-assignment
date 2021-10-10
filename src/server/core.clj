@@ -1,22 +1,27 @@
 (ns server.core
   (:require [aleph.http :as http]
-            [manifold.deferred :as d]
-            [db.core :as db]
-            [mount.core :as mount]))
+            [reitit.ring :as ring]
+            [reitit.middleware :as middleware]
+            [muuntaja.core :as m]
+            [reitit.ring.middleware.muuntaja :as muuntaja]
+            [mount.core :as mount]
+            [server.handler :as handler]))
 
-(defn slow-handler [_]
-  {:status 200
-   :headers {"content-type" "text/plain"}
-   :body (pr-str (db/put-random))})
-
-(defn handler [req]
-  (let [dfr (d/deferred)]
-    (binding [*use-context-classloader* false]
-        (d/success! dfr (slow-handler req)))
-    dfr))
+(def ring-handler
+  (ring/ring-handler
+   (ring/router
+    ["/account" {:middleware [:negotiation]}
+     ["" {:post handler/create-account}]
+     ["/:id" {:get handler/view-account}]
+     ["/:id/deposit" {:post handler/deposit-into-account}]
+     ["/:id/withdraw" {:post handler/withdraw-from-account}]
+     ["/:id/send" {:post handler/transfer}]
+     ["/:id/audit" {:get handler/view-audit-log}]]
+    {::middleware/registry {:negotiation muuntaja/format-middleware}
+     :data {:muuntaja m/instance}})))
 
 (mount/defstate server
-  :start (http/start-server #'handler {:port 8080})
+  :start (http/start-server (http/wrap-ring-async-handler #'ring-handler) {:port 8080})
   :stop (.close server))
 
 (defn -main []
