@@ -1,6 +1,7 @@
 (ns id-generator.core-test
   (:require [id-generator.core :as sut]
             [db.core :as db]
+            [fixtures.core :as fixtures]
             [clojure.test :refer [deftest is use-fixtures]]))
 
 (def id-key-1 {:key :id-key-1})
@@ -11,7 +12,7 @@
   (reset! sut/sequence-tracker {})
   (db/evict id-key-1 id-key-2))
 
-(use-fixtures :once cleanup-ids)
+(use-fixtures :once fixtures/start-deps cleanup-ids)
 
 (deftest test-generate-id
   (is (= 0 (sut/generate-id id-key-1))

@@ -1,10 +1,13 @@
 (ns account.core-test
   (:require [account.core :as sut]
             [db.core :as db]
-            [clojure.test :refer [deftest is]]))
+            [fixtures.core :as fixtures]
+            [clojure.test :refer [deftest is use-fixtures]]))
 
 (def account-name "Mr. Black")
 (def more-account-names (map #(str "Account " %) (range 5)))
+
+(use-fixtures :once fixtures/start-deps)
 
 (def write-many db/write-many)
 
