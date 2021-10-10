@@ -1,5 +1,6 @@
 (ns server.core
   (:require [aleph.http :as http]
+            [aleph.flow :as flow]
             [reitit.ring :as ring]
             [reitit.middleware :as middleware]
             [muuntaja.core :as m]
@@ -21,7 +22,9 @@
      :data {:muuntaja m/instance}})))
 
 (mount/defstate server
-  :start (http/start-server (http/wrap-ring-async-handler #'ring-handler) {:port 8080})
+  :start (http/start-server (http/wrap-ring-async-handler #'ring-handler)
+                            {:executor (flow/fixed-thread-executor (.availableProcessors (Runtime/getRuntime)))
+                             :port 8080})
   :stop (.close server))
 
 (defn -main []
