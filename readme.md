@@ -48,9 +48,11 @@ requests, however the application response time suffers.
 The test I used can be found in this repo, `simple-test.jmx`. I only tested
 creating an account and querying an account.
 
+To run: `jmeter -n -t simple-test.jmx -l simple-test-results.jtl`
+
 Machine tested on: 2019 Macbook Pro, 2,6 GHz 6-Core Intel Core i7, 16gb RAM.
 
-**Not wainting for transaction to be indexed**
+**Not waiting for transaction to be indexed**
 
     summary +  44546 in 00:00:15 = 3009.9/s Avg:   216 Min:     2 Max:   481 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
     summary +  91926 in 00:00:30 = 3064.5/s Avg:   324 Min:   144 Max:   532 Err:     0 (0.00%) Active: 957 Started: 1000 Finished: 43
