@@ -89,6 +89,8 @@ To test: `clj -M:test`
 
 To dev, jack in, then run `(start)`
 
+Will listen on port 8080
+
 ## Conclusion
 
 I could have done more, however I had to limit what I did to the time I had. 
