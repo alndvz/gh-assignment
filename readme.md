@@ -30,7 +30,9 @@ will only return once the transaction has been indexed. This removes the need fo
 providing for inconsistent state, but slows down the API.
 
 Lastly, my id generator code leaves a lot to be desired. I think an application 
-crash could cause duplicated ids to be generated.
+crash could cause duplicated ids to be generated. The most recent IDs are persisted
+in memory during application operation, memory usage will steadily increase as 
+more keys are added.
 
 ## Omissions
 * I have not tested what will happen if the application crashes while XTDB is
@@ -46,6 +48,8 @@ requests, however the application response time suffers.
 The test I used can be found in this repo, `simple-test.jmx`. I only tested
 creating an account and querying an account.
 
+Machine tested on: 2019 Macbook Pro, 2,6 GHz 6-Core Intel Core i7, 16gb RAM.
+
 **Not wainting for transaction to be indexed**
 
     summary +  44546 in 00:00:15 = 3009.9/s Avg:   216 Min:     2 Max:   481 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
@@ -56,30 +60,33 @@ creating an account and querying an account.
     Tidying up ...    @ Sun Oct 10 14:57:52 SAST 2021 (1633870672325)
     ... end of run
     
-**Waiting for transaction to be indexed**
+**Waiting for transaction to be indexed (incl. id gen)**
 
-    summary +   4208 in 00:00:07 =  625.6/s Avg:   479 Min:   112 Max:  1053 Err:     0 (0.00%) Active: 671 Started: 671 Finished: 0
-    summary +  35997 in 00:00:30 = 1199.7/s Avg:   813 Min:   319 Max:  1717 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
-    summary =  40205 in 00:00:37 = 1094.5/s Avg:   778 Min:   112 Max:  1717 Err:     0 (0.00%)
-    summary +  34275 in 00:00:30 = 1142.7/s Avg:   875 Min:   327 Max:  1867 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
-    summary =  74480 in 00:01:07 = 1116.2/s Avg:   823 Min:   112 Max:  1867 Err:     0 (0.00%)
-    summary +  23012 in 00:00:30 =  766.9/s Avg:  1289 Min:   469 Max:  1917 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
-    summary =  97492 in 00:01:37 = 1007.8/s Avg:   933 Min:   112 Max:  1917 Err:     0 (0.00%)
-    summary +  22087 in 00:00:30 =  736.3/s Avg:  1358 Min:   556 Max:  2148 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
-    summary = 119579 in 00:02:07 =  943.6/s Avg:  1012 Min:   112 Max:  2148 Err:     0 (0.00%)
-    summary +  27803 in 00:00:30 =  926.4/s Avg:  1086 Min:   476 Max:  2181 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
-    summary = 147382 in 00:02:37 =  940.3/s Avg:  1026 Min:   112 Max:  2181 Err:     0 (0.00%)
-    summary +  28377 in 00:00:30 =  946.1/s Avg:  1055 Min:   440 Max:  1876 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
-    summary = 175759 in 00:03:07 =  941.2/s Avg:  1030 Min:   112 Max:  2181 Err:     0 (0.00%)
-    summary +  24241 in 00:00:25 =  957.2/s Avg:   929 Min:     1 Max:  1922 Err:     0 (0.00%) Active: 0 Started: 1000 Finished: 1000
-    summary = 200000 in 00:03:32 =  943.1/s Avg:  1018 Min:     1 Max:  2181 Err:     0 (0.00%)
-    Tidying up ...    @ Sun Oct 10 15:42:55 SAST 2021 (1633873375333)
-    ... end of run
+    summary +   8608 in 00:00:13 =  659.7/s Avg:   882 Min:   127 Max:  1772 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
+    summary +  31428 in 00:00:30 = 1047.6/s Avg:   951 Min:   797 Max:  1219 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
+    summary =  40036 in 00:00:43 =  930.0/s Avg:   936 Min:   127 Max:  1772 Err:     0 (0.00%)
+    summary +  29458 in 00:00:30 =  981.8/s Avg:  1017 Min:   416 Max:  1835 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
+    summary =  69494 in 00:01:13 =  951.3/s Avg:   971 Min:   127 Max:  1835 Err:     0 (0.00%)
+    summary +  23678 in 00:00:30 =  789.2/s Avg:  1261 Min:   904 Max:  1629 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
+    summary =  93172 in 00:01:43 =  904.1/s Avg:  1044 Min:   127 Max:  1835 Err:     0 (0.00%)
+    summary +  21941 in 00:00:30 =  731.5/s Avg:  1368 Min:   511 Max:  2105 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
+    summary = 115113 in 00:02:13 =  865.2/s Avg:  1106 Min:   127 Max:  2105 Err:     0 (0.00%)
+    summary +  24388 in 00:00:30 =  813.0/s Avg:  1232 Min:  1008 Max:  1828 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
+    summary = 139501 in 00:02:43 =  855.6/s Avg:  1128 Min:   127 Max:  2105 Err:     0 (0.00%)
+    summary +  26602 in 00:00:30 =  886.7/s Avg:  1127 Min:   487 Max:  1899 Err:     0 (0.00%) Active: 1000 Started: 1000 Finished: 0
+    summary = 166103 in 00:03:13 =  860.4/s Avg:  1128 Min:   127 Max:  2105 Err:     0 (0.00%)
+    summary +  25059 in 00:00:30 =  834.8/s Avg:  1195 Min:   973 Max:  1740 Err:     0 (0.00%) Active: 929 Started: 1000 Finished: 71
+    summary = 191162 in 00:03:43 =  857.0/s Avg:  1137 Min:   127 Max:  2105 Err:     0 (0.00%)
+    summary +   8838 in 00:00:10 =  895.7/s Avg:   858 Min:     0 Max:  1194 Err:     0 (0.00%) Active: 0 Started: 1000 Finished: 1000
+    summary = 200000 in 00:03:53 =  858.6/s Avg:  1124 Min:     0 Max:  2105 Err:     0 (0.00%)
+    Tidying up ...    @ Sun Oct 10 15:59:39 SAST 2021 (1633874379888)
 
 ## Running the application
 
 To run: `clojure -M -m server.core`
+
 To test: `clj -M:test`
+
 To dev, jack in, then run `(start)`
 
 ## Conclusion
