@@ -31,14 +31,14 @@
 ;; therefore multiple accounts can be created with the
 ;; same name.
 (defn create [name]
-  (let [account-number (id-gen/generate-id id-gen-key)
+  (let [account-number (str (id-gen/generate-id id-gen-key))
         account-entity {:db/id account-number
                         :type :account
                         :account-number account-number
                         :name name
                         :balance 0}
         transaction (create-transaction account-number {:description "account created"})]
-    (db/write-many [account-entity transaction] :wait? true)
+    (db/write-many [account-entity transaction])
     account-entity))
 
 (defn view [account-number]
@@ -55,8 +55,9 @@
     (let [updated-account (update account :balance + amount)
           transaction (create-transaction account-number {:description "deposit"
                                                           :credit amount})]
-      (db/write-many [updated-account transaction] :wait? true)
+      (db/write-many [updated-account transaction] :match-entity account)
       updated-account)))
+
 
 (defn withdraw [account-number amount]
   (let [{:keys [balance] :as account} (view account-number)]
@@ -67,7 +68,7 @@
     (let [updated-account (update account :balance - amount)
           transaction (create-transaction account-number {:description "withdraw"
                                                           :debit amount})]
-      (db/write-many [updated-account transaction] :wait? true)
+      (db/write-many [updated-account transaction] :match-entity account)
       updated-account)))
 
 (defn transfer [from-account-number to-account-number amount]
@@ -94,5 +95,5 @@
                       updated-to-account
                       sent-trans
                       recv-trans]
-                     :wait? true)
+                     :match-entity from-account)
       updated-from-account)))
