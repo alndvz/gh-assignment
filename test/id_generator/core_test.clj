@@ -8,6 +8,7 @@
 
 (defn cleanup-ids [f]
   (f)
+  (reset! sut/sequence-tracker {})
   (db/evict id-key-1 id-key-2))
 
 (use-fixtures :once cleanup-ids)
