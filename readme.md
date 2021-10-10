@@ -27,7 +27,8 @@ information to the user.
 
 By adding a `:wait? true` argument to the `db.core/write-many` call, the request
 will only return once the transaction has been indexed. This removes the need for
-providing for inconsistent state, but slows down the API.
+providing for inconsistent state, but slows down the API. Failed match operations
+will still need to be catered for.
 
 Lastly, my id generator code leaves a lot to be desired. I think an application 
 crash could cause duplicated ids to be generated. The most recent IDs are persisted
