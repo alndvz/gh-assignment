@@ -33,7 +33,7 @@ will still need to be catered for.
 My id generator code leaves a lot to be desired. I think an application 
 crash could cause duplicated ids to be generated. The most recent IDs are persisted
 in memory during application operation, memory usage will steadily increase as 
-more keys are added. Lastly I think I could have implemented it in simpler way, using refs, however I reached for core.async because I am more familiar with it and wanted to wrap up the test.
+more keys are added.
 
 ## Omissions
 * I have not tested what will happen if the application crashes while XTDB is
